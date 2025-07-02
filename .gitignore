@@ -9,9 +9,6 @@
 /tmp/
 /dist/
 
-# Go modules cache (just in case)
-go.sum
-
 # IDE/editor configs
 .vscode/
 .idea/
