@@ -1,0 +1,38 @@
+# Binaries
+*.exe
+*.test
+*.out
+
+# Build directories
+/bin/
+/build/
+/tmp/
+/dist/
+
+# Go modules cache (just in case)
+go.sum
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# Dependency directories (not needed for Go modules)
+vendor/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Air live-reload tool temp files
+.air/
+.air.toml
+
+# Migration & generated files
+scripts/
+*.log
+
+# Docker
+*.env
+.env.*
+docker-compose.override.yml

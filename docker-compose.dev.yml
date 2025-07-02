@@ -1,0 +1,16 @@
+services:
+    db:
+      image: postgres:16.3
+      restart: always
+      environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: adminpassword
+        POSTGRES_DB: chat
+      ports:
+        - "127.0.0.1:5432:5432"
+      volumes:
+        - chat_data:/var/lib/postgresql/data
+        - ./scripts:/docker-entrypoint-initdb.d
+
+volumes:
+  chat_data:

@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16.3
+    restart: always
+    env_file: .env
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - chat_data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  chat-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GITHUB_TOKEN: ${MY_GITHUB_TOKEN}
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:3003:3003"
+    depends_on:
+      - db
+    command: ["./chat-service"]
+
+volumes:
+  chat_data:
