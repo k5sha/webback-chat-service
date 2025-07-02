@@ -3,6 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres:16.3
+    container_name: webback-chat-postgres
     restart: always
     env_file: .env
     environment:
@@ -28,6 +29,7 @@ services:
       dockerfile: Dockerfile
       args:
         GITHUB_TOKEN: ${MY_GITHUB_TOKEN}
+    container_name: webback-chat-service
     env_file:
       - .env
     ports:
