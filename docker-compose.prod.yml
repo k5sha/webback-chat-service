@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:16.3
@@ -8,7 +10,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
-      - "127.0.0.1:5434:5434"
+      - "127.0.0.1:5434:5432" 
     volumes:
       - chat_data:/var/lib/postgresql/data
       - ./scripts:/docker-entrypoint-initdb.d
@@ -17,6 +19,8 @@ services:
       interval: 10s
       retries: 5
       timeout: 5s
+    networks:
+      - chat-network
 
   chat-service:
     build:
@@ -31,6 +35,12 @@ services:
     depends_on:
       - db
     command: ["./chat-service"]
+    networks:
+      - chat-network
 
 volumes:
   chat_data:
+
+networks:
+  chat-network:
+    driver: bridge
