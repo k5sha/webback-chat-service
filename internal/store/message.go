@@ -9,7 +9,7 @@ import (
 type Message struct {
 	ID      string    `json:"id"`
 	RoomID  string    `json:"room_id"`
-	Sender  string    `json:"sender"`
+	Sender  string    `json:"sender_id"`
 	Content string    `json:"content"`
 	Type    string    `json:"type"`
 	SentAt  time.Time `json"sent_at"`

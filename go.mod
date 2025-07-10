@@ -3,7 +3,7 @@ module github.com/k5sha/webback-chat-service
 go 1.24.2
 
 require (
-	github.com/k5sha/webback-go-proto v0.1.0
+	github.com/k5sha/webback-go-proto v0.1.5
 	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.73.0
 )

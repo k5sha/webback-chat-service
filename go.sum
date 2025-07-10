@@ -46,8 +46,8 @@ github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/go-multierror v1.1.1 h1:H5DkEtf6CXdFp0N0Em5UCwQpXMWke8IA0+lD48awMYo=
 github.com/hashicorp/go-multierror v1.1.1/go.mod h1:iw975J/qwKPdAO1clOe2L8331t/9/fmwbPZ6JB6eMoM=
-github.com/k5sha/webback-go-proto v0.1.0 h1:kcVyXzWFFLjABW9yz+kfLG6el0X/SZRVhsI/3MkOAWg=
-github.com/k5sha/webback-go-proto v0.1.0/go.mod h1:6SVV/MZWHiM/3AImXw4ER8QWUU+1Pe/d4zIVuu2ORck=
+github.com/k5sha/webback-go-proto v0.1.1 h1:GeZRvxS5mWOA5v5WPI1z2or6jRbgYsH0PcUxaokud6k=
+github.com/k5sha/webback-go-proto v0.1.1/go.mod h1:6SVV/MZWHiM/3AImXw4ER8QWUU+1Pe/d4zIVuu2ORck=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
 github.com/moby/docker-image-spec v1.3.1 h1:jMKff3w6PgbfSa69GfNg+zN/XLhfXJGnEx3Nl2EsFP0=
