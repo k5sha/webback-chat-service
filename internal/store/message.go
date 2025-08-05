@@ -12,7 +12,7 @@ type Message struct {
 	Sender  string    `json:"sender_id"`
 	Content string    `json:"content"`
 	Type    string    `json:"type"`
-	SentAt  time.Time `json"sent_at"`
+	SentAt  time.Time `json:"sent_at"`
 }
 
 type MessagesStore struct {
