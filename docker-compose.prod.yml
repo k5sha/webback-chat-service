@@ -3,7 +3,6 @@ services:
     image: postgres:16.3
     container_name: webback-chat-postgres
     restart: always
-    env_file: .env
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
