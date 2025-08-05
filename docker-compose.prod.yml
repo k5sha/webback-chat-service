@@ -22,6 +22,7 @@ services:
       - chat-network
 
   chat-service:
+    image: ${IMAGE_REF}
     container_name: webback-chat-service
     ports:
       - "127.0.0.1:3003:3003"
