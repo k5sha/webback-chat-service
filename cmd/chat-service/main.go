@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -40,24 +39,37 @@ func main() {
 
 	// Migration
 
+	migrationsPath := "/app/cmd/migrate/migrations"
+
+	if _, err := os.Stat(migrationsPath); os.IsNotExist(err) {
+		log.Fatalf("Migrations path does not exist: %s", migrationsPath)
+	}
+
+	sourceURL := "file://" + migrationsPath
+
+	log.Println("Starting DB migrations")
+	log.Printf("Using migrations path: %s", migrationsPath)
+
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatalf("failed to get current working directory: %v", err)
 	}
+	log.Printf("Current working dir: %s", dir)
 
-	migrationsPath := filepath.Join(dir, "cmd", "migrate", "migrations")
-	sourceURL := "file://" + filepath.ToSlash(migrationsPath)
-
-	m, err := migrate.New(
-		sourceURL,
-		cfg.DB.Addr,
-	)
+	m, err := migrate.New(sourceURL, cfg.DB.Addr)
 	if err != nil {
-		log.Fatalf("failed to create migrate instance: %v", err)
+		log.Fatalf("Failed to create migrate instance: %v", err)
 	}
 
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("failed to run up migrations: %v", err)
+	err = m.Up()
+	if err != nil && migrate.ErrNoChange != err {
+		log.Fatalf("Migration failed: %v", err)
+	}
+
+	if err == migrate.ErrNoChange {
+		log.Println("No new migrations to run")
+	} else {
+		log.Println("Migrations applied successfully")
 	}
 
 	// Store

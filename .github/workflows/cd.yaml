@@ -1,0 +1,79 @@
+name: "🚀 Continuous Delivery (CD)"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yaml
+    secrets:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  deploy:
+    name: 🚚 Deploy to VPS
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        env:
+          GIT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔑 Set up SSH access
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} > ~/.ssh/known_hosts
+          docker context create remote --docker host=ssh://${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+
+      - name: 🤖 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,format=short,prefix=
+
+      - name: ⚙️ Log in to the Container registry
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🚀 Docker compose on server
+        env:
+          IMAGE_REF: ${{ steps.meta.outputs.tags }}
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          DB_ADDR: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable
+        run: |
+          docker --context remote compose -f docker-compose.prod.yml pull
+          docker --context remote compose -f docker-compose.prod.yml up -d
+
+      - name: 🧹 Cleanup and summary
+        run: |
+          docker --context remote system prune -f --filter "until=72h"
+          rm -rf ~/.ssh
+          echo "### ✅ Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item       | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🐳 Image    | \`${{ steps.meta.outputs.tags }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔀 Git SHA  | \`${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🕒 Time     | \`$(date -u)\` |" >> $GITHUB_STEP_SUMMARY

@@ -22,23 +22,18 @@ services:
       - chat-network
 
   chat-service:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        GITHUB_TOKEN: ${MY_GITHUB_TOKEN}
     container_name: webback-chat-service
-    env_file:
-      - .env
     ports:
       - "127.0.0.1:3003:3003"
+    environment:
+      - DB_ADDR=${DB_ADDR}
     depends_on:
-      - db
-    command: ["./chat-service"]
+      db:
+        condition: service_healthy
     networks:
       - chat-network
       - webback-net
-    restart: always
+    restart: on-failure
 
 volumes:
   chat_data:
