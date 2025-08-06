@@ -27,6 +27,7 @@ services:
       - "127.0.0.1:3003:3003"
     environment:
       - DB_ADDR=${DB_ADDR}
+      - DB_MIGRATIONS_PATH=${DB_MIGRATIONS_PATH}
     depends_on:
       db:
         condition: service_healthy

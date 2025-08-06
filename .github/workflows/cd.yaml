@@ -62,6 +62,7 @@ jobs:
           POSTGRES_USER: ${{secrets.POSTGRES_USER}}
           POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
           DB_ADDR: postgres://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?sslmode=disable
+          DB_MIGRATIONS_PATH: ${{ vars.DB_MIGRATIONS_PATH }}
         run: |
           docker --context remote compose -f docker-compose.prod.yml pull
           docker --context remote compose -f docker-compose.prod.yml up -d

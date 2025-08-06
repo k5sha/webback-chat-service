@@ -12,10 +12,11 @@ type Config struct {
 }
 
 type dbConfig struct {
-	Addr         string
-	MaxOpenConns int
-	MaxIdleConns int
-	MaxIdleTime  time.Duration
+	Addr           string
+	MaxOpenConns   int
+	MaxIdleConns   int
+	MaxIdleTime    time.Duration
+	MigrationsPath string
 }
 
 func Load() Config {
@@ -23,10 +24,11 @@ func Load() Config {
 	return Config{
 		Addr: env.GetString("ADDR", ":3003"),
 		DB: dbConfig{
-			Addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost:5433/chat?sslmode=disable"),
-			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
-			MaxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
-			MaxIdleTime:  env.GetDuration("DB_MAX_IDLE_TIME", 5*time.Minute),
+			Addr:           env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost:5433/chat?sslmode=disable"),
+			MaxOpenConns:   env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			MaxIdleConns:   env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			MaxIdleTime:    env.GetDuration("DB_MAX_IDLE_TIME", 5*time.Minute),
+			MigrationsPath: env.GetString("DB_MIGRATIONS_PATH", "./cmd/migrate/migrations"),
 		},
 	}
 }

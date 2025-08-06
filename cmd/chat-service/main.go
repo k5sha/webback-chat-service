@@ -39,16 +39,14 @@ func main() {
 
 	// Migration
 
-	migrationsPath := "/app/cmd/migrate/migrations"
-
-	if _, err := os.Stat(migrationsPath); os.IsNotExist(err) {
-		log.Fatalf("Migrations path does not exist: %s", migrationsPath)
+	if _, err := os.Stat(cfg.DB.MigrationsPath); os.IsNotExist(err) {
+		log.Fatalf("Migrations path does not exist: %s", cfg.DB.MigrationsPath)
 	}
 
-	sourceURL := "file://" + migrationsPath
+	sourceURL := "file://" + cfg.DB.MigrationsPath
 
 	log.Println("Starting DB migrations")
-	log.Printf("Using migrations path: %s", migrationsPath)
+	log.Printf("Using migrations path: %s", cfg.DB.MigrationsPath)
 
 	dir, err := os.Getwd()
 	if err != nil {
