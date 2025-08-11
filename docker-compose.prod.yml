@@ -34,7 +34,16 @@ services:
     networks:
       - chat-network
       - webback-net
+      - traefik_default
     restart: on-failure
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webback-chat.rule=Host(`chat.webroom.k5sha.xyz`)"
+      - "traefik.http.routers.webback-chat.entrypoints=https"
+      - "traefik.http.routers.webback-chat.tls=true"
+      - "traefik.http.routers.webback-chat.tls.certresolver=letsEncrypt"
+      - "traefik.http.routers.webback-chat.service=webback-auth"
+      - "traefik.http.services.webback-chat.loadbalancer.server.url=http://webback-auth-service:8083"
 
 volumes:
   chat_data:
@@ -43,4 +52,6 @@ networks:
   chat-network:
     driver: bridge
   webback-net:
+    external: true
+  traefik_default:
     external: true
