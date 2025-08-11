@@ -16,7 +16,7 @@ var (
 
 type Storage struct {
 	Messages interface {
-		ListByRoomID(context.Context, string, int) ([]*Message, error)
+		ListByRoomID(context.Context, string, int64, int64) (int32, []*Message, error)
 		Create(context.Context, *Message) (*Message, error)
 		// Delete(context.Context, int64) error
 	}

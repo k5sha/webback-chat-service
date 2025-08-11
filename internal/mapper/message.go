@@ -8,12 +8,13 @@ import (
 
 func ToMessageProto(m *store.Message) *pb.ChatMessage {
 	return &pb.ChatMessage{
-		Id:      m.ID,
-		RoomId:  m.RoomID,
-		Sender:  m.Sender,
-		Content: m.Content,
-		Type:    m.Type,
-		SentAt:  timestamppb.New(m.SentAt),
+		Id:             m.ID,
+		RoomId:         m.RoomID,
+		SenderId:       m.SenderId,
+		SenderUsername: m.SenderUsername,
+		Content:        m.Content,
+		Type:           m.Type,
+		SentAt:         timestamppb.New(m.SentAt),
 	}
 }
 

@@ -7,12 +7,13 @@ import (
 )
 
 type Message struct {
-	ID      string    `json:"id"`
-	RoomID  string    `json:"room_id"`
-	Sender  string    `json:"sender_id"`
-	Content string    `json:"content"`
-	Type    string    `json:"type"`
-	SentAt  time.Time `json:"sent_at"`
+	ID             string    `json:"id"`
+	RoomID         string    `json:"room_id"`
+	SenderId       string    `json:"sender_id"`
+	SenderUsername string    `json:"sender_username"`
+	Content        string    `json:"content"`
+	Type           string    `json:"type"`
+	SentAt         time.Time `json:"sent_at"`
 }
 
 type MessagesStore struct {
@@ -29,7 +30,7 @@ func (s *MessagesStore) Create(ctx context.Context, message *Message) (*Message,
 		ctx,
 		query,
 		message.RoomID,
-		message.Sender,
+		message.SenderId,
 		message.Content,
 		message.Type,
 	).Scan(
@@ -44,20 +45,37 @@ func (s *MessagesStore) Create(ctx context.Context, message *Message) (*Message,
 	return message, nil
 }
 
-func (s *MessagesStore) ListByRoomID(ctx context.Context, roomID string, limit int) ([]*Message, error) {
+func (s *MessagesStore) GetAmountOfMessages(ctx context.Context, roomID string) (int32, error) {
 	query := `
-        SELECT id, room_id, sender, content, type, sent_at 
-        FROM messages 
-        WHERE room_id = $1 
-        ORDER BY sent_at ASC 
-        LIMIT $2`
+        SELECT COUNT(*) FROM messages WHERE room_id = $1
+		`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	rows, err := s.db.QueryContext(ctx, query, roomID, limit)
+	var amount int32
+	err := s.db.QueryRowContext(ctx, query, roomID).Scan(&amount)
 	if err != nil {
-		return nil, err
+		return 0, err
+	}
+	return amount, nil
+
+}
+func (s *MessagesStore) ListByRoomID(ctx context.Context, roomID string, limit, offset int64) (int32, []*Message, error) {
+	query := `
+        SELECT * FROM (SELECT id, room_id, sender, content, type, sent_at
+        FROM messages 
+        WHERE room_id = $1 
+        ORDER BY sent_at DESC 
+        LIMIT $2 OFFSET $3) AS last_messages
+		ORDER BY sent_at ASC `
+
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	rows, err := s.db.QueryContext(ctx, query, roomID, limit, offset)
+	if err != nil {
+		return 0, nil, err
 	}
 	defer rows.Close()
 
@@ -67,17 +85,21 @@ func (s *MessagesStore) ListByRoomID(ctx context.Context, roomID string, limit i
 		if err := rows.Scan(
 			&msg.ID,
 			&msg.RoomID,
-			&msg.Sender,
+			&msg.SenderId,
 			&msg.Content,
 			&msg.Type,
 			&msg.SentAt,
 		); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		messages = append(messages, &msg)
 	}
+	amount, err := s.GetAmountOfMessages(ctx, roomID)
+	if err != nil {
+		return 0, nil, err
+	}
 
-	return messages, nil
+	return amount, messages, nil
 }
 
 // func (s *MessagesStore) Update(ctx context.Context, tx *sql.Tx, user *User) error {
