@@ -43,7 +43,7 @@ services:
       - "traefik.http.routers.webback-chat.tls=true"
       - "traefik.http.routers.webback-chat.tls.certresolver=letsEncrypt"
       - "traefik.http.routers.webback-chat.service=webback-auth"
-      - "traefik.http.services.webback-chat.loadbalancer.server.url=http://webback-auth-service:8083"
+      - "traefik.http.services.webback-chat.loadbalancer.server.url=http://webback-chat-service:8083"
 
 volumes:
   chat_data:
