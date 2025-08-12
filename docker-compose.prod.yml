@@ -28,6 +28,7 @@ services:
     environment:
       - DB_ADDR=${DB_ADDR}
       - DB_MIGRATIONS_PATH=${DB_MIGRATIONS_PATH}
+      - AUTH_SERVICE_ADDR=${AUTH_SERVICE_ADDR}
     depends_on:
       db:
         condition: service_healthy
